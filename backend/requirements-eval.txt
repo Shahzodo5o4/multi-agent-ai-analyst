@@ -1,0 +1,13 @@
+# F11 — evaluation harness only. Install AFTER the system runs:
+#   pip install -r requirements-eval.txt
+#
+# RAGAS is PINNED to 0.2.x on purpose. From 0.3 onward it depends on
+# scikit-network (for its knowledge-graph features), which ships no wheel for
+# Python 3.14 and fails to build without Microsoft C++ Build Tools. 0.2.15 has
+# every metric this project uses — faithfulness, answer relevancy, context
+# precision, context recall — and installs from wheels alone.
+#
+# If this install still fails, evaluate.py says so and reports the LLM-judge
+# and routing numbers anyway. You lose part of F11, not the whole system.
+ragas>=0.2.15,<0.3
+datasets>=3.0.0

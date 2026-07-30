@@ -1,0 +1,42 @@
+# Core runtime — everything needed to RUN the multi-agent system (F1-F10, F12-F14).
+# Evaluation deps (F11) live in requirements-eval.txt because RAGAS pulls in a
+# heavy dependency tree; keeping them separate means a failed eval install can
+# never stop the system itself from running.
+
+# --- Orchestration (F7, F8, F9) ---
+langgraph>=0.2.60
+langchain>=0.3.7
+langchain-core>=0.3.15
+langchain-community>=0.3.5
+
+# --- LLM + embeddings via the class LiteLLM proxy (F2, F3, F5, F6, F7, F8) ---
+# The proxy is OpenAI-compatible, so the OpenAI LangChain classes are used and
+# pointed at it. google-genai is still needed by list_models.py / pick_model.py,
+# which talk to the proxy's native Gemini surface.
+langchain-openai>=0.2.9
+google-genai>=1.0.0
+
+# --- Vector store: Qdrant, embedded mode = no signup, no server (F2, F10) ---
+qdrant-client>=1.12.0
+langchain-qdrant>=0.2.0
+
+# --- Web search (F4) — optional, system degrades gracefully without it ---
+tavily-python>=0.5.0
+
+# --- Text-to-SQL (F5) ---
+SQLAlchemy>=2.0.30
+
+# --- Observability (F12) — optional ---
+langfuse>=2.53.0
+
+# --- API server for the HTML frontend (F13) ---
+# SSE is hand-rolled on FastAPI's StreamingResponse — no extra library needed.
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# --- Optional: PDF ingestion. Uncomment if you drop PDFs into data/docs ---
+# pypdf>=5.0.0
+
+# --- Config (F1) ---
+python-dotenv>=1.0.1
+pydantic>=2.9.0

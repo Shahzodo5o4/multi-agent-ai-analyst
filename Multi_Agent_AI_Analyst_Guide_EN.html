@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multi-Agent AI Analyst — Project Guide &amp; Rubric</title>
+<style>
+  :root{
+    --ink:#16202e; --muted:#5b6b82; --line:#e2e8f2; --bg:#f6f8fc; --card:#ffffff;
+    --indigo:#4f46e5; --blue:#0972d3; --blueL:#eaf2ff; --green:#0a7d54; --greenL:#e7f7ef;
+    --orange:#c76a00; --orangeL:#fff2e0; --purple:#7c3aed; --purpleL:#f1ebff; --navy:#1f2a44; --red:#c0392b;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink); background:var(--bg); line-height:1.6; margin:0}
+  .wrap{max-width:940px; margin:0 auto; padding:34px 20px 80px}
+  h1{font-size:2rem; margin:0 0 4px; color:var(--navy)}
+  h2{font-size:1.35rem; margin:40px 0 10px; color:var(--navy); border-bottom:2px solid var(--line); padding-bottom:6px}
+  h3{font-size:1.05rem; margin:18px 0 6px; color:var(--navy)}
+  .lead{color:var(--muted); font-size:1.05rem; margin:0 0 8px}
+  .badge{display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.04em; text-transform:uppercase;
+    background:var(--purpleL); color:var(--purple); border:1px solid #ddd0fb; border-radius:20px; padding:3px 11px; margin:6px 6px 0 0}
+  .intro-note{background:var(--greenL); border:1px solid #b9e6d1; border-left:5px solid var(--green);
+    border-radius:10px; padding:14px 16px; margin:16px 0}
+  code,.sourceCode{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  :not(pre)>code{background:#eef2f9; border:1px solid var(--line); border-radius:4px; padding:1px 6px; font-size:.9em}
+  pre{background:#0f1a2b; color:#e6edf6; border-radius:10px; padding:14px 16px; overflow-x:auto; font-size:.84rem; line-height:1.5}
+  pre .k{color:#7fb2ff} pre .s{color:#8ee6a8} pre .c{color:#7f8ea3; font-style:italic} pre .f{color:#ffcf7a}
+  .term-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px; margin:14px 0}
+  .term-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px}
+  .term-card .k-dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:7px; vertical-align:1px}
+  .term-card h4{margin:0 0 5px; font-size:.98rem; color:var(--navy)}
+  .term-card p{margin:0; font-size:.9rem; color:var(--muted)}
+  .diagram-scroll{overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin:14px 0; text-align:center}
+  .op{background:var(--orangeL); border:1px solid #f3d5a8; border-left:5px solid var(--orange); border-radius:8px; padding:10px 14px; margin:12px 0; font-size:.92rem}
+  .dod{background:var(--greenL); border:1px solid #b9e6d1; border-left:5px solid var(--green); border-radius:8px; padding:10px 14px; margin:12px 0; font-size:.92rem}
+  table{border-collapse:collapse; width:100%; margin:12px 0; font-size:.9rem}
+  th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+  th{background:#eef3fb; color:var(--navy)}
+  td.pts{text-align:center; font-weight:800; color:var(--purple); white-space:nowrap}
+  ul.check{list-style:none; padding:0} ul.check li{padding:5px 0 5px 28px; position:relative}
+  ul.check li::before{content:"\2610"; position:absolute; left:2px; font-size:1.05rem; color:var(--blue)}
+  /* phase roadmap */
+  .phase{background:var(--card); border:1px solid var(--line); border-left:5px solid var(--purple); border-radius:10px; padding:12px 16px; margin:12px 0}
+  .phase .pn{font-weight:800; color:var(--purple)}
+  .phase .dep{font-size:.85rem; color:var(--muted); margin-top:3px}
+  /* feature block */
+  .feature{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 20px; margin:16px 0; box-shadow:0 1px 3px rgba(20,32,48,.05)}
+  .fhead{display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap}
+  .fnum{width:34px; height:30px; border-radius:8px; background:linear-gradient(135deg,var(--purple),var(--blue)); color:#fff; font-weight:800; display:grid; place-items:center; flex:none; font-size:.85rem}
+  .fhead .name{font-size:1.06rem; font-weight:800; color:var(--navy)}
+  .ftag{font-size:.68rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; background:var(--blueL); color:var(--blue); border:1px solid #cfe0fb; border-radius:20px; padding:2px 9px}
+  .feature p{margin:5px 0}
+  .lbl{font-weight:800; color:var(--navy)}
+  .foot{color:var(--muted); text-align:center; font-size:.85rem; margin-top:40px}
+  a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Multi-Agent AI Analyst — Project Guide &amp; Rubric</h1>
+<p class="lead">The "ultimate" capstone. A <b>team of AI agents</b> — a supervisor that plans and delegates to specialists
+(documents, web, database, code), a critic that verifies the work, plus an <b>evaluation and observability</b> layer that
+proves it works. This guide is built to be <b>followed step by step</b> and <b>graded feature by feature</b>.</p>
+<span class="badge">Level: Ultimate / Capstone+</span>
+<span class="badge">LangGraph multi-agent</span>
+<span class="badge">Tools: SQL · Code · Web</span>
+<span class="badge">Graded /100</span>
+
+<div class="intro-note">
+<b>How to use this document.</b> Section&nbsp;A is the <b>build order</b> (what to build first, and why). Section&nbsp;B details
+<b>every feature separately</b> (what it is, how to build it, and exactly when it counts as done). Section&nbsp;C is the
+<b>mentor's grading rubric (100 points)</b> — one line per feature, with what to check. Build in the order given; a later
+feature depends on the earlier ones.
+</div>
+
+<h2>Requirement — each student claims their OWN free API keys</h2>
+<div class="op"><b>This project is 100% free — no credit card anywhere.</b> Every student uses their OWN keys (rate limits are counted <b>per account</b>, so one shared key blocks the whole group). On the free path, <b>Gemini alone</b> covers the LLM, the embeddings, <em>and</em> image vision — the rest have free tiers with no card.</div>
+<table>
+  <tr><th>Service</th><th>Used for</th><th>Get a free key at</th><th>Free tier</th><th>Card?</th></tr>
+  <tr><td>Google Gemini <span style="color:var(--green);font-weight:700">(default)</span></td><td>LLM + embeddings</td><td>aistudio.google.com/apikey</td><td>Generous, per account</td><td>No</td></tr>
+  <tr><td>DeepSeek <span class="muted">(optional LLM)</span></td><td>Alternative LLM</td><td>platform.deepseek.com</td><td>Trial credits, low cost</td><td>—</td></tr>
+  <tr><td>Qdrant</td><td>Vector database</td><td>embedded (no signup) or cloud.qdrant.io</td><td>Free (1 GB)</td><td>No</td></tr>
+  <tr><td>Tavily</td><td>Web search (F4)</td><td>tavily.com</td><td>1,000 searches / month</td><td>No</td></tr>
+  <tr><td>Langfuse</td><td>Observability (F12)</td><td>cloud.langfuse.com</td><td>Free tier</td><td>No</td></tr>
+  <tr><td>Backend host</td><td>Run/deploy backend (F14)</td><td>Colab + Gradio share, or Render</td><td>Free, no card</td><td>No</td></tr>
+  <tr><td>Vercel</td><td>Deploy frontend (F14)</td><td>vercel.com</td><td>Free hobby tier</td><td>No</td></tr>
+</table>
+<p><b>Truly required (all free, no card):</b> a Gemini key · Qdrant (embedded = no signup) · a backend host (Colab or Render) · Vercel (or run the frontend locally in VS Code).<br>
+<b>Optional extras (also free):</b> Tavily (web search), Langfuse (tracing), DeepSeek (alternative LLM). Skip them and the project still works, still $0.</p>
+<p class="muted">Each student puts <b>their own</b> keys in a local <code>.env</code> (never committed) — see Feature 1. <b>Total cost: $0, no credit card.</b></p>
+
+<h2>The challenge — why one agent isn't enough</h2>
+<p>A single RAG agent can only retrieve and answer. But a real question — <em>"How many customers churned last quarter,
+and why?"</em> — needs a <b>database query</b> (the number), <b>document retrieval</b> (the reasons), and maybe a
+<b>calculation</b>. No single tool answers it. A <b>multi-agent system</b> divides the work: a <b>supervisor</b> routes to the
+right specialist, collects results, and a <b>critic</b> verifies before answering — looping back if it's wrong.</p>
+
+<h2>Visual dictionary</h2>
+<div class="term-grid">
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--purple)"></span>Multi-agent system</h4><p>Several specialised agents that collaborate on one task instead of one agent doing everything.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--purple)"></span>Supervisor / Router</h4><p>The "manager" agent: reads the question and decides which specialist runs next.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--blue)"></span>Specialist agent</h4><p>An agent with one job — retriever, web-searcher, data analyst, or code runner.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--blue)"></span>Tool use</h4><p>Giving an agent real actions — run a query, execute Python — not just generate text.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--green)"></span>Text-to-SQL</h4><p>The agent writes a SQL query from a plain question, runs it, and reads the result.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--green)"></span>Code agent</h4><p>An agent that writes and runs Python for calculations, tables, or charts.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--orange)"></span>Agent handoff</h4><p>Passing control and shared state from one agent to another through the graph.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--red)"></span>Critic / Verifier</h4><p>Checks the final answer for correctness and grounding, and forces a revision if it's wrong.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--blue)"></span>Long-term memory</h4><p>A vector store of past turns so the system remembers earlier context.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--purple)"></span>LLM-as-judge</h4><p>Using a strong model to score another model's answers against a rubric or reference.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--green)"></span>RAGAS</h4><p>A library of RAG metrics: faithfulness, answer relevance, context precision/recall.</p></div>
+  <div class="term-card"><h4><span class="k-dot" style="background:var(--orange)"></span>Observability (Langfuse)</h4><p>Tracing every agent step, tool call, token and cost so you can debug and measure.</p></div>
+</div>
+
+<h2>Visual 1 — The supervisor multi-agent graph</h2>
+<div class="diagram-scroll">
+<svg viewBox="0 0 660 340" width="100%" style="max-width:660px;height:auto" font-family="Segoe UI,Arial" font-size="12">
+  <defs><marker id="a" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6 z" fill="#5b6b82"/></marker></defs>
+  <rect x="14" y="70" width="96" height="40" rx="9" fill="#eaf2ff" stroke="#0972d3"/><text x="62" y="88" text-anchor="middle" fill="#0b5cad" font-weight="700">Memory</text><text x="62" y="102" text-anchor="middle" fill="#0b5cad" font-size="10">past turns</text>
+  <line x1="110" y1="90" x2="235" y2="86" stroke="#5b6b82" stroke-dasharray="4 3" marker-end="url(#a)"/>
+  <rect x="270" y="12" width="120" height="34" rx="9" fill="#eef1f5" stroke="#c9d4e6"/><text x="330" y="34" text-anchor="middle" font-weight="700">Question</text>
+  <line x1="330" y1="46" x2="330" y2="64" stroke="#5b6b82" marker-end="url(#a)"/>
+  <rect x="240" y="66" width="180" height="46" rx="10" fill="#f1ebff" stroke="#7c3aed"/><text x="330" y="86" text-anchor="middle" fill="#5b21b6" font-weight="800">Supervisor / Router</text><text x="330" y="102" text-anchor="middle" fill="#7c3aed" font-size="10.5">picks the next agent</text>
+  <rect x="12" y="158" width="140" height="46" rx="9" fill="#e7f7ef" stroke="#0a7d54"/><text x="82" y="178" text-anchor="middle" fill="#0a7d54" font-weight="700">Retriever</text><text x="82" y="194" text-anchor="middle" fill="#0a7d54" font-size="10">RAG over docs</text>
+  <rect x="168" y="158" width="140" height="46" rx="9" fill="#e7f7ef" stroke="#0a7d54"/><text x="238" y="178" text-anchor="middle" fill="#0a7d54" font-weight="700">Web</text><text x="238" y="194" text-anchor="middle" fill="#0a7d54" font-size="10">Tavily search</text>
+  <rect x="324" y="158" width="140" height="46" rx="9" fill="#e7f7ef" stroke="#0a7d54"/><text x="394" y="178" text-anchor="middle" fill="#0a7d54" font-weight="700">Data (SQL)</text><text x="394" y="194" text-anchor="middle" fill="#0a7d54" font-size="10">text-to-SQL</text>
+  <rect x="480" y="158" width="140" height="46" rx="9" fill="#e7f7ef" stroke="#0a7d54"/><text x="550" y="178" text-anchor="middle" fill="#0a7d54" font-weight="700">Code</text><text x="550" y="194" text-anchor="middle" fill="#0a7d54" font-size="10">runs Python</text>
+  <line x1="300" y1="112" x2="110" y2="156" stroke="#5b6b82" marker-end="url(#a)"/>
+  <line x1="320" y1="112" x2="250" y2="156" stroke="#5b6b82" marker-end="url(#a)"/>
+  <line x1="345" y1="112" x2="400" y2="156" stroke="#5b6b82" marker-end="url(#a)"/>
+  <line x1="365" y1="112" x2="540" y2="156" stroke="#5b6b82" marker-end="url(#a)"/>
+  <text x="150" y="140" fill="#5b6b82" font-size="10">delegate ↕ return results</text>
+  <line x1="330" y1="210" x2="330" y2="252" stroke="#5b6b82" marker-end="url(#a)"/>
+  <text x="356" y="230" fill="#5b6b82" font-size="10">results → supervisor → critic</text>
+  <rect x="250" y="256" width="160" height="46" rx="10" fill="#fdecea" stroke="#c0392b"/><text x="330" y="276" text-anchor="middle" fill="#a93226" font-weight="800">Critic / Verifier</text><text x="330" y="292" text-anchor="middle" fill="#c0392b" font-size="10.5">grounded? correct?</text>
+  <line x1="410" y1="279" x2="472" y2="279" stroke="#5b6b82" marker-end="url(#a)"/><text x="500" y="272" text-anchor="middle" fill="#0a7d54" font-size="10.5">approved</text>
+  <rect x="474" y="260" width="52" height="38" rx="9" fill="#e7f7ef" stroke="#0a7d54"/><text x="500" y="284" text-anchor="middle" font-size="16">✅</text>
+  <path d="M250 279 C120 279 120 112 238 100" fill="none" stroke="#5b6b82" stroke-dasharray="4 3" marker-end="url(#a)"/>
+  <text x="120" y="245" fill="#5b6b82" font-size="10">revise → back to supervisor</text>
+  <text x="330" y="330" text-anchor="middle" fill="#5b6b82" font-size="10.5">A step budget / recursion limit guarantees the graph always terminates.</text>
+</svg>
+</div>
+
+<h2>A. Build order — what to build first (and why)</h2>
+<p>Build in this order. Each phase depends on the one before it — you cannot route to agents that don't exist yet,
+and you cannot evaluate a system that doesn't run yet.</p>
+
+<div class="phase"><span class="pn">Phase 1 · Foundation</span> — Features 1–2: shared state, config &amp; keys, then document ingestion + vector store.
+<div class="dep">Why first: everything reads/writes the shared state, and the retriever needs a populated vector store to exist.</div></div>
+<div class="phase"><span class="pn">Phase 2 · Specialist agents (one at a time)</span> — Features 3–6: retriever → web → data (SQL) → code. Build and test <b>each agent alone</b> before wiring them together.
+<div class="dep">Why next: the supervisor has nothing to route to until the specialists work. Test each in isolation first.</div></div>
+<div class="phase"><span class="pn">Phase 3 · Orchestration</span> — Features 7–9: the supervisor (router), the critic (verifier), then wire the LangGraph graph.
+<div class="dep">Why now: only once the agents work can the supervisor delegate to them and the critic verify their output.</div></div>
+<div class="phase"><span class="pn">Phase 4 · Memory &amp; Evaluation</span> — Features 10–11: long-term memory, then the evaluation harness (RAGAS + LLM-judge).
+<div class="dep">Why now: you can only measure a system that already runs end-to-end.</div></div>
+<div class="phase"><span class="pn">Phase 5 · Observability, Frontend &amp; Deploy</span> — Features 12–14: Langfuse tracing, streaming frontend, then deploy both.
+<div class="dep">Why last: these wrap a working, measured system for real use.</div></div>
+
+<h2>B. Features in detail</h2>
+<p class="lead">Each feature below has: <b>What</b> it is · <b>Why</b> it matters · <b>How</b> to build it · <b>Done when</b> (the checkable outcome) · <b>Watch out</b>.</p>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F1</span><span class="name">Shared state &amp; config</span><span class="ftag">Phase 1</span></div>
+  <p><span class="lbl">What:</span> one <code>AgentState</code> object that flows through every node, plus a config that reads keys from <code>.env</code>.</p>
+  <p><span class="lbl">Why:</span> every agent reads and updates the same state (question, documents, results, steps, revision count). No shared state = no collaboration.</p>
+<pre><span class="k">class</span> <span class="f">AgentState</span>(TypedDict):
+    question:str; plan:str; documents:List[str]
+    sql_result:Optional[str]; code_result:Optional[str]
+    answer:str; steps:List[str]; revisions:int</pre>
+  <div class="dod"><span class="lbl">Done when:</span> keys load from <code>.env</code>; the state type is defined and used by every node.</div>
+  <div class="op"><span class="lbl">Watch out:</span> never commit <code>.env</code>. Keep <code>revisions</code> in state so the graph can terminate.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F2</span><span class="name">Ingestion &amp; vector store</span><span class="ftag">Phase 1</span></div>
+  <p><span class="lbl">What:</span> load documents → chunk → embed → store in Qdrant.</p>
+  <p><span class="lbl">Why:</span> the retriever agent has nothing to search until documents are embedded and stored.</p>
+<pre>chunks = RecursiveCharacterTextSplitter(chunk_size=<span class="s">1000</span>, chunk_overlap=<span class="s">150</span>).split_documents(docs)
+vectorstore.add_documents(chunks)</pre>
+  <div class="dod"><span class="lbl">Done when:</span> a document is ingested and a similarity search returns relevant chunks.</div>
+  <div class="op"><span class="lbl">Watch out:</span> the embedding dimension must match the Qdrant collection size.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F3</span><span class="name">Retriever agent</span><span class="ftag">Phase 2</span></div>
+  <p><span class="lbl">What:</span> the RAG agent — retrieves the top-k relevant chunks for the question.</p>
+  <p><span class="lbl">Why:</span> it answers "from your documents" questions; the reused core from the previous project.</p>
+<pre><span class="k">def</span> <span class="f">retriever_agent</span>(state):
+    docs = vectorstore.as_retriever(search_kwargs={<span class="s">"k"</span>:<span class="s">4</span>}).invoke(state[<span class="s">"question"</span>])
+    <span class="k">return</span> {<span class="s">"documents"</span>:[d.page_content <span class="k">for</span> d <span class="k">in</span> docs], <span class="s">"steps"</span>:state[<span class="s">"steps"</span>]+[<span class="s">"retriever"</span>]}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> tested alone, it returns correct chunks for a document question.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F4</span><span class="name">Web agent</span><span class="ftag">Phase 2</span></div>
+  <p><span class="lbl">What:</span> a Tavily web-search agent for questions outside the documents.</p>
+  <p><span class="lbl">Why:</span> extends coverage beyond the local knowledge base.</p>
+<pre><span class="k">def</span> <span class="f">web_agent</span>(state):
+    hits = TavilyClient(api_key=KEY).search(state[<span class="s">"question"</span>])[<span class="s">"results"</span>]
+    <span class="k">return</span> {<span class="s">"documents"</span>:state[<span class="s">"documents"</span>]+[h[<span class="s">"content"</span>] <span class="k">for</span> h <span class="k">in</span> hits]}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> it returns live web results; skips gracefully if no key is set.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F5</span><span class="name">Data agent — Text-to-SQL</span><span class="ftag">Phase 2</span></div>
+  <p><span class="lbl">What:</span> the hard new skill — the agent writes a SQL query from the question, runs it on a real database, reads the result.</p>
+  <p><span class="lbl">Why:</span> numeric/aggregate questions ("how many…", "average…") can only be answered by querying data, not by RAG.</p>
+<pre>db = SQLDatabase.from_uri(<span class="s">"sqlite:///data/company.db"</span>)
+<span class="k">def</span> <span class="f">data_agent</span>(state):
+    sql = llm.invoke(f<span class="s">"Schema:\n{db.get_table_info()}\nOne SQLite query for: {state['question']}. SQL only."</span>).content
+    <span class="k">assert</span> sql.strip().lower().startswith(<span class="s">"select"</span>)   <span class="c"># read-only guard</span>
+    <span class="k">return</span> {<span class="s">"sql_result"</span>: f<span class="s">"{sql}\n→ {db.run(sql)}"</span>, <span class="s">"steps"</span>:state[<span class="s">"steps"</span>]+[<span class="s">"data(sql)"</span>]}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> a "how many…" question returns the correct number from the database.</div>
+  <div class="op"><span class="lbl">Watch out:</span> read-only DB user; reject any query that isn't a <code>SELECT</code>. Never let it run <code>DROP</code>/<code>DELETE</code>.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F6</span><span class="name">Code agent — run Python</span><span class="ftag">Phase 2</span></div>
+  <p><span class="lbl">What:</span> writes and executes Python for calculations, aggregation, or charts.</p>
+  <p><span class="lbl">Why:</span> LLMs are unreliable at exact math; running code gives correct numbers.</p>
+<pre>py = PythonREPLTool()
+<span class="k">def</span> <span class="f">code_agent</span>(state):
+    code = llm.invoke(f<span class="s">"Write Python to answer: {state['question']}. print() the result."</span>).content
+    <span class="k">return</span> {<span class="s">"code_result"</span>: py.run(code), <span class="s">"steps"</span>:state[<span class="s">"steps"</span>]+[<span class="s">"code"</span>]}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> a math/aggregation question returns the correct computed answer.</div>
+  <div class="op"><span class="lbl">Watch out:</span> run in a <b>sandbox</b> with a runtime cap — never execute model-written code on the bare server.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F7</span><span class="name">Supervisor / Router</span><span class="ftag">Phase 3</span></div>
+  <p><span class="lbl">What:</span> the manager — an LLM with structured output that decides the next agent, or that the answer is ready.</p>
+  <p><span class="lbl">Why:</span> this is the brain of a multi-agent system; it turns four separate agents into a team.</p>
+<pre><span class="k">class</span> <span class="f">Route</span>(BaseModel): next:str = Field(description=<span class="s">"retriever|web|data|code|finish"</span>)
+<span class="k">def</span> <span class="f">supervisor</span>(state):
+    d = llm.with_structured_output(Route).invoke(
+        f<span class="s">"Question:{state['question']} Collected:{state['steps']}. Next agent, or 'finish'."</span>)
+    <span class="k">return</span> {<span class="s">"plan"</span>:d.next, <span class="s">"steps"</span>:state[<span class="s">"steps"</span>]+[<span class="s">"supervisor→"</span>+d.next]}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> for a SQL question it routes to <code>data</code>; for a doc question to <code>retriever</code>; it eventually chooses <code>finish</code>.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F8</span><span class="name">Critic / Verifier</span><span class="ftag">Phase 3</span></div>
+  <p><span class="lbl">What:</span> checks the drafted answer against the gathered evidence; approves or sends it back to revise.</p>
+  <p><span class="lbl">Why:</span> catches wrong or unsupported answers before the user sees them — the quality gate.</p>
+<pre><span class="k">class</span> <span class="f">Verdict</span>(BaseModel): ok:bool; reason:str
+<span class="k">def</span> <span class="f">critic</span>(state):
+    v = llm.with_structured_output(Verdict).invoke(
+        f<span class="s">"Q:{state['question']} Evidence:{state['documents']}{state['sql_result']}{state['code_result']} "</span>
+        f<span class="s">"Answer:{state['answer']} Correct AND fully supported?"</span>)
+    <span class="k">return</span> {<span class="s">"revisions"</span>:state[<span class="s">"revisions"</span>]+(<span class="s">0</span> <span class="k">if</span> v.ok <span class="k">else</span> <span class="s">1</span>)}</pre>
+  <div class="dod"><span class="lbl">Done when:</span> a deliberately wrong answer is caught and revised; a good one is approved.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F9</span><span class="name">Supervisor graph (wiring)</span><span class="ftag">Phase 3</span></div>
+  <p><span class="lbl">What:</span> the LangGraph graph connecting supervisor → agent → back to supervisor, then critic → finish or revise.</p>
+  <p><span class="lbl">Why:</span> this is what makes it a system, not a pile of functions.</p>
+<pre>g.add_conditional_edges(<span class="s">"supervisor"</span>, <span class="k">lambda</span> s:s[<span class="s">"plan"</span>],
+   {<span class="s">"retriever"</span>:<span class="s">"retriever"</span>,<span class="s">"web"</span>:<span class="s">"web"</span>,<span class="s">"data"</span>:<span class="s">"data"</span>,<span class="s">"code"</span>:<span class="s">"code"</span>,<span class="s">"finish"</span>:<span class="s">"generate"</span>})
+<span class="k">for</span> a <span class="k">in</span>[<span class="s">"retriever"</span>,<span class="s">"web"</span>,<span class="s">"data"</span>,<span class="s">"code"</span>]: g.add_edge(a,<span class="s">"supervisor"</span>)
+g.add_conditional_edges(<span class="s">"critic"</span>, route_after_critic, {<span class="s">"finish"</span>:END,<span class="s">"revise"</span>:<span class="s">"supervisor"</span>})</pre>
+  <div class="dod"><span class="lbl">Done when:</span> a multi-part question runs end-to-end through several agents and terminates with one answer.</div>
+  <div class="op"><span class="lbl">Watch out:</span> set a recursion/step limit so a mis-routing loop can't run forever.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F10</span><span class="name">Long-term memory</span><span class="ftag">Phase 4</span></div>
+  <p><span class="lbl">What:</span> a vector store of past turns; relevant history is fed into the supervisor.</p>
+  <p><span class="lbl">Why:</span> lets the system answer follow-ups that depend on earlier turns.</p>
+<pre>memory.add_texts([f<span class="s">"Q:{q}\nA:{a}"</span>])                <span class="c"># after each turn</span>
+past = memory.similarity_search(new_question, k=<span class="s">3</span>)  <span class="c"># into the supervisor</span></pre>
+  <div class="dod"><span class="lbl">Done when:</span> a follow-up like "and the previous year?" uses the earlier context correctly.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F11</span><span class="name">Evaluation harness</span><span class="ftag">Phase 4</span></div>
+  <p><span class="lbl">What:</span> a fixed test set scored automatically with RAGAS metrics and an LLM judge.</p>
+  <p><span class="lbl">Why:</span> the difference between a demo and a product — you can <em>measure</em> quality, not just eyeball it.</p>
+<pre><span class="k">from</span> ragas <span class="k">import</span> evaluate
+<span class="k">from</span> ragas.metrics <span class="k">import</span> faithfulness, answer_relevancy, context_precision
+scores = evaluate(dataset, metrics=[faithfulness, answer_relevancy, context_precision])
+<span class="c"># + LLM-judge: score each answer 1-5 vs a reference answer</span></pre>
+  <div class="dod"><span class="lbl">Done when:</span> running the harness prints a metrics table over a test set of at least 10 questions.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F12</span><span class="name">Observability (Langfuse)</span><span class="ftag">Phase 5</span></div>
+  <p><span class="lbl">What:</span> tracing of every agent step, tool call, token and cost.</p>
+  <p><span class="lbl">Why:</span> you can't debug or optimise what you can't see.</p>
+<pre>app.invoke(state, config={<span class="s">"callbacks"</span>:[CallbackHandler()]})  <span class="c"># every step traced</span></pre>
+  <div class="dod"><span class="lbl">Done when:</span> a Langfuse trace shows the full path (supervisor → data → code → critic) with token counts.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F13</span><span class="name">Streaming frontend</span><span class="ftag">Phase 5</span></div>
+  <p><span class="lbl">What:</span> a Next.js UI that streams the <code>steps</code> so users watch the agents work live.</p>
+  <p><span class="lbl">Why:</span> a multi-agent system is far more convincing when you can see which agent is acting.</p>
+  <div class="dod"><span class="lbl">Done when:</span> the UI shows the live trace (supervisor → agent → critic → answer) with sources.</div>
+</div>
+
+<div class="feature">
+  <div class="fhead"><span class="fnum">F14</span><span class="name">Deployment</span><span class="ftag">Phase 5</span></div>
+  <p><span class="lbl">What:</span> make it a live, shareable link — a free option that needs <b>no credit card</b>:</p>
+  <p><b>Easiest (no card, no server):</b> run the whole app + a <b>Gradio UI in Google Colab</b> and call
+  <code>demo.launch(share=True)</code> — you get a public link for ~72&nbsp;h. Colab has ~12&nbsp;GB RAM, so even local embeddings fit.<br>
+  <b>Always-on API:</b> deploy the backend to <b>Render</b> (free, no card) and the frontend to <b>Vercel</b> (free).</p>
+  <p><span class="lbl">Why:</span> a capstone must be a live URL — not just a notebook cell.</p>
+  <div class="dod"><span class="lbl">Done when:</span> there is a public link (Gradio share or Render URL) that answers a real question.</div>
+  <div class="op"><span class="lbl">Watch out:</span> Render free is only <b>512&nbsp;MB RAM</b> — there, use <b>API embeddings (Gemini)</b>, not a local model. Colab has plenty of RAM for local embeddings.</div>
+</div>
+
+<h2>C. Mentor's evaluation rubric (100 points)</h2>
+<p>Grade each student feature by feature. A feature scores full marks only when its <b>"Done when"</b> is demonstrated live.</p>
+<table>
+  <tr><th>Phase</th><th>#</th><th>Feature — what to check</th><th>Pts</th></tr>
+  <tr><td rowspan="2">1 · Foundation</td><td>F1</td><td>Shared state defined &amp; used everywhere; keys load from <code>.env</code></td><td class="pts">5</td></tr>
+  <tr><td>F2</td><td>Ingestion works; similarity search returns relevant chunks</td><td class="pts">10</td></tr>
+  <tr><td rowspan="4">2 · Specialist agents</td><td>F3</td><td>Retriever returns correct chunks (tested alone)</td><td class="pts">6</td></tr>
+  <tr><td>F4</td><td>Web agent returns live results; skips gracefully without a key</td><td class="pts">6</td></tr>
+  <tr><td>F5</td><td><b>Data/SQL agent</b> writes + runs SQL, returns the right number; read-only guard present</td><td class="pts">10</td></tr>
+  <tr><td>F6</td><td><b>Code agent</b> runs Python, returns correct math; sandboxed with a cap</td><td class="pts">8</td></tr>
+  <tr><td rowspan="3">3 · Orchestration</td><td>F7</td><td>Supervisor routes to the right agent per question type</td><td class="pts">10</td></tr>
+  <tr><td>F8</td><td>Critic catches a wrong answer and forces a revision</td><td class="pts">7</td></tr>
+  <tr><td>F9</td><td>Graph runs a multi-part question end-to-end &amp; always terminates</td><td class="pts">8</td></tr>
+  <tr><td rowspan="2">4 · Memory &amp; Eval</td><td>F10</td><td>Long-term memory recalls an earlier turn on a follow-up</td><td class="pts">5</td></tr>
+  <tr><td>F11</td><td><b>Evaluation harness</b>: RAGAS + LLM-judge over ≥10 questions, results reported</td><td class="pts">10</td></tr>
+  <tr><td rowspan="3">5 · Ship</td><td>F12</td><td>Langfuse trace shows the full agent path with tokens</td><td class="pts">5</td></tr>
+  <tr><td>F13</td><td>Frontend streams the live multi-agent trace</td><td class="pts">5</td></tr>
+  <tr><td>F14</td><td>Live public link works (Gradio share, or Render + Vercel) — no card needed</td><td class="pts">5</td></tr>
+  <tr><th colspan="3" style="text-align:right">Total</th><td class="pts">100</td></tr>
+</table>
+<h3>Grade bands</h3>
+<table>
+  <tr><th>Score</th><th>Grade</th><th>Meaning</th></tr>
+  <tr><td>90–100</td><td><b>Excellent</b></td><td>All agents + critic + evaluation + deployed. Production-shaped.</td></tr>
+  <tr><td>75–89</td><td><b>Strong</b></td><td>Multi-agent system works &amp; is deployed; evaluation or one tool is thin.</td></tr>
+  <tr><td>60–74</td><td><b>Pass</b></td><td>Supervisor + ≥2 tool agents + critic run end-to-end; limited eval/deploy.</td></tr>
+  <tr><td>&lt; 60</td><td><b>Incomplete</b></td><td>No working orchestration, or only a single-agent RAG (previous project level).</td></tr>
+</table>
+
+<h2>Required visuals (student submits)</h2>
+<ul>
+  <li>The supervisor multi-agent graph (Visual 1).</li>
+  <li>A frontend screenshot of a live multi-agent trace (supervisor → data → code → critic).</li>
+  <li>A Langfuse trace of one complex question.</li>
+  <li>The evaluation metrics table (with vs without the critic).</li>
+</ul>
+
+<h2>Error analysis (student submits)</h2>
+<p>Pick 3 questions the system got wrong and trace <em>which agent</em> failed: supervisor mis-routed, SQL was wrong,
+code errored, retrieval missed, or the critic let a bad answer through. Write one fix per failure.</p>
+
+<h2>Submission checklist</h2>
+<ul class="check">
+  <li>Uses your OWN free API keys (Gemini · Qdrant · Tavily · Langfuse) — not a shared key</li>
+  <li>Repo with supervisor graph + 4 specialist agents + critic</li>
+  <li>Real database wired for text-to-SQL (read-only)</li>
+  <li>Code agent sandboxed with a runtime cap</li>
+  <li>Long-term memory recalls an earlier turn</li>
+  <li>Evaluation: RAGAS + LLM-judge on a test set, results reported</li>
+  <li>Langfuse tracing enabled (trace screenshot)</li>
+  <li>Backend + frontend deployed (public URLs)</li>
+  <li>README with the graph diagram, metrics table, and error analysis</li>
+</ul>
+
+<h2>Final conclusion</h2>
+<p>A single agent <em>answers</em>. A <b>team of agents</b> <em>plans, uses real tools, checks its own work, and proves it works</em>.
+Build it phase by phase, and grade it feature by feature — by the end each student has shipped a supervisor-led system that
+queries databases, runs code, searches documents and the web, verifies its answers, and is measured with RAGAS and traced in
+Langfuse: the very front of what the field is doing today.</p>
+
+<p class="foot">Multi-Agent AI Analyst · Project Guide &amp; Rubric — builds on the Agentic RAG project.</p>
+</div>
+</body>
+</html>

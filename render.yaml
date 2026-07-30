@@ -1,0 +1,46 @@
+# F14 — free backend deploy on Render. No credit card required.
+#
+# 1. push this repo to GitHub
+# 2. Render dashboard -> New -> Blueprint -> pick the repo
+# 3. set GEMINI_API_KEY in the dashboard (your `sk-` proxy key; never commit it)
+# 4. deploy the frontend separately: Vercel -> static site -> index.html
+#
+# Free tier is 512 MB RAM and spins down after 15 minutes of inactivity, so the
+# first request after a pause takes ~30 s. Keep EMBEDDING_MODEL on the Gemini
+# API model — a local embedding model will not fit in 512 MB.
+services:
+  - type: web
+    name: multi-agent-analyst-api
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: |
+      pip install -r requirements.txt
+      python data/seed_db.py
+      python ingest.py
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      # Set this in the Render dashboard, not here.
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
+      - key: LANGFUSE_PUBLIC_KEY
+        sync: false
+      - key: LANGFUSE_SECRET_KEY
+        sync: false
+      # Model names as exposed by the class LiteLLM proxy, NOT Google's own ids.
+      # gemini-2.5-flash / models/text-embedding-004 do not exist there.
+      - key: LLM_MODEL
+        value: gemini-flash-lite
+      # gemini-flash if your proxy key is authorised for it — a stronger critic.
+      - key: REASONING_MODEL
+        value: gemini-flash-lite
+      - key: EMBEDDING_MODEL
+        value: gemini-embedding
+      # MUST match what the embedding model actually returns, or every Qdrant
+      # insert fails on a dimension mismatch — during `ingest.py` in the build.
+      - key: EMBEDDING_DIM
+        value: "3072"
+      - key: PYTHON_VERSION
+        value: "3.12"

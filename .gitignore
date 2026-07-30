@@ -1,0 +1,33 @@
+# F1 — secrets NEVER get committed. This line is worth 5 rubric points.
+.env
+backend/.env
+*.env
+!.env.example
+!backend/.env.example
+
+# Local vector store (embedded Qdrant writes here)
+backend/qdrant_data/
+backend/memory_data/
+
+# Generated database
+backend/data/company.db
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Eval output
+backend/eval/results/
+
+# Deploy artifact for the Colab path — rebuilt on demand, never needed in the repo
+backend.zip
+
+# OS
+Thumbs.db
+.DS_Store
+
+# isolated RAGAS scoring environment (F11 stage 2)
+.venv-eval/

@@ -1,0 +1,100 @@
+[
+  {
+    "id": "doc-1",
+    "category": "document",
+    "expected_agent": "retriever",
+    "question": "What is the refund policy in the first 30 days?",
+    "reference": "A full refund is available within 30 days of the first payment on any plan, no questions asked."
+  },
+  {
+    "id": "doc-2",
+    "category": "document",
+    "expected_agent": "retriever",
+    "question": "How long is customer data kept after a cancellation?",
+    "reference": "Data is retained for 90 days after cancellation. Reactivating within that window restores everything; after 90 days the workspace and all data are permanently deleted."
+  },
+  {
+    "id": "doc-3",
+    "category": "document",
+    "expected_agent": "retriever",
+    "question": "Why did churn spike in Q3 2024?",
+    "reference": "The dominant driver was the 1 July 2024 pricing change: Starter went from $29 to $49 per month, the two free seats were removed without being mentioned in the announcement, notice was only 14 days, and existing customers were not grandfathered. Missing Salesforce/HubSpot integrations, onboarding gaps and a billing support backlog made it worse."
+  },
+  {
+    "id": "doc-4",
+    "category": "document",
+    "expected_agent": "retriever",
+    "question": "What is the first response SLA for billing questions on the Starter plan?",
+    "reference": "8 business hours. Billing questions get an 8-hour first response on all plans including Starter, introduced after the Q3 2024 support backlog."
+  },
+  {
+    "id": "sql-1",
+    "category": "sql",
+    "expected_agent": "data",
+    "question": "How many customers churned in Q3 2024?",
+    "reference": "25 customers churned between 1 July and 30 September 2024."
+  },
+  {
+    "id": "sql-2",
+    "category": "sql",
+    "expected_agent": "data",
+    "question": "How many customers are in the database in total, and how many are still active?",
+    "reference": "240 customers in total, of which 197 are still active."
+  },
+  {
+    "id": "sql-3",
+    "category": "sql",
+    "expected_agent": "data",
+    "question": "Which customer segment has the most customers?",
+    "reference": "SMB, with 126 customers, ahead of Mid-Market (73) and Enterprise (41)."
+  },
+  {
+    "id": "sql-4",
+    "category": "sql",
+    "expected_agent": "data",
+    "question": "What is the total monthly recurring revenue from active subscriptions?",
+    "reference": "$40,303.00 in MRR from subscriptions with no end date."
+  },
+  {
+    "id": "sql-5",
+    "category": "sql",
+    "expected_agent": "data",
+    "question": "What was the single most common churn reason recorded in Q3 2024?",
+    "reference": "Pricing change, recorded for 12 of the 25 Q3 2024 churn events."
+  },
+  {
+    "id": "code-1",
+    "category": "code",
+    "expected_agent": "code",
+    "question": "If I invest 2500 dollars at 4.5 percent compounded annually, what is it worth after 7 years?",
+    "reference": "About $3,402.15 — 2500 x 1.045^7 — which is roughly $902.15 of interest."
+  },
+  {
+    "id": "code-2",
+    "category": "code",
+    "expected_agent": "code",
+    "question": "What is the compound annual growth rate if revenue goes from 120000 to 195000 over 3 years?",
+    "reference": "About 17.6% per year — (195000/120000)^(1/3) - 1."
+  },
+  {
+    "id": "multi-1",
+    "category": "multi-hop",
+    "expected_agent": "data+code|data",
+    "question": "How many customers churned in Q3 2024, and what percentage of all customers is that?",
+    "reference": "25 customers churned in Q3 2024, which is about 10.4% of the 240 customers in the database."
+  },
+  {
+    "id": "multi-2",
+    "category": "multi-hop",
+    "expected_agent": "data+retriever",
+    "question": "How many customers churned in Q3 2024, and what does the postmortem say caused it?",
+    "reference": "25 customers churned in Q3 2024. The postmortem attributes it mainly to the 1 July 2024 pricing change (Starter $29 to $49, free seats removed, 14 days notice, no grandfathering), compounded by missing integrations, onboarding gaps and a billing support backlog."
+  },
+  {
+    "id": "multi-3",
+    "category": "multi-hop",
+    "expected_agent": "data+code|data",
+    "question": "How much MRR did we lose to churn in Q3 2024, and what share is that of current active MRR?",
+    "reference": "$7,325.00 of MRR was lost to Q3 2024 churn, which is about 18.2% of the $40,303.00 in current active MRR."
+  }
+]

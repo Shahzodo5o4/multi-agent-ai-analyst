@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multi-Agent AI Analyst</title>
+<style>
+  /* Palette deliberately matches the project guide so the submission reads as one piece. */
+  :root{
+    --ink:#16202e; --muted:#5b6b82; --line:#e2e8f2; --bg:#f6f8fc; --card:#ffffff;
+    --blue:#0972d3; --blueL:#eaf2ff; --green:#0a7d54; --greenL:#e7f7ef;
+    --orange:#c76a00; --orangeL:#fff2e0; --purple:#7c3aed; --purpleL:#f1ebff;
+    --navy:#1f2a44; --red:#c0392b; --redL:#fdecea;
+    --shadow:0 1px 3px rgba(20,32,48,.06), 0 8px 24px rgba(20,32,48,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e8edf5; --muted:#93a3ba; --line:#26324a; --bg:#0d1420; --card:#151e2e;
+      --blueL:#12243c; --greenL:#0f2a20; --orangeL:#2e2110; --purpleL:#221a3d; --redL:#2e1614;
+      --navy:#dbe4f0;
+      --shadow:0 1px 3px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--bg); color:var(--ink); line-height:1.6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1140px; margin:0 auto; padding:28px 20px 80px}
+
+  /* ---------- header ---------- */
+  header{display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap}
+  h1{font-size:1.6rem; margin:0; color:var(--navy); letter-spacing:-.02em}
+  .sub{color:var(--muted); font-size:.94rem; margin:2px 0 0}
+  .settings{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .settings label{font-size:.78rem; color:var(--muted); font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .settings input{font:inherit; font-size:.85rem; padding:7px 10px; border:1px solid var(--line);
+    border-radius:8px; background:var(--card); color:var(--ink); width:230px}
+
+  /* ---------- status ---------- */
+  .status{display:flex; gap:8px; flex-wrap:wrap; margin:16px 0 20px}
+  .pill{display:inline-flex; align-items:center; gap:6px; font-size:.78rem; font-weight:700;
+    border-radius:20px; padding:4px 12px; border:1px solid var(--line); background:var(--card); color:var(--muted)}
+  .pill .dot{width:8px; height:8px; border-radius:50%; background:var(--muted)}
+  .pill.ok{background:var(--greenL); color:var(--green); border-color:transparent}
+  .pill.ok .dot{background:var(--green)}
+  .pill.warn{background:var(--orangeL); color:var(--orange); border-color:transparent}
+  .pill.warn .dot{background:var(--orange)}
+  .pill.bad{background:var(--redL); color:var(--red); border-color:transparent}
+  .pill.bad .dot{background:var(--red)}
+
+  /* ---------- ask box ---------- */
+  .ask{background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:16px; box-shadow:var(--shadow)}
+  .ask-row{display:flex; gap:10px}
+  #q{flex:1; font:inherit; font-size:1rem; padding:12px 14px; border:1px solid var(--line);
+    border-radius:10px; background:transparent; color:var(--ink); resize:vertical; min-height:52px}
+  #q:focus{outline:2px solid var(--purple); outline-offset:1px; border-color:transparent}
+  button.primary{font:inherit; font-weight:700; font-size:.95rem; padding:12px 22px; border:0;
+    border-radius:10px; cursor:pointer; color:#fff; background:linear-gradient(135deg,var(--purple),var(--blue));
+    white-space:nowrap; transition:transform .12s ease, opacity .12s ease}
+  button.primary:hover:not(:disabled){transform:translateY(-1px)}
+  button.primary:disabled{opacity:.5; cursor:not-allowed}
+  .examples{display:flex; gap:7px; flex-wrap:wrap; margin-top:12px}
+  .chip{font:inherit; font-size:.8rem; padding:5px 12px; border-radius:20px; cursor:pointer;
+    border:1px solid var(--line); background:transparent; color:var(--muted); transition:.12s}
+  .chip:hover{border-color:var(--purple); color:var(--purple); background:var(--purpleL)}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid; grid-template-columns:minmax(0,340px) minmax(0,1fr); gap:20px; margin-top:22px}
+  @media (max-width:860px){ .grid{grid-template-columns:1fr} }
+  .panel{background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:16px 18px; box-shadow:var(--shadow)}
+  .panel h2{font-size:.78rem; margin:0 0 12px; color:var(--muted);
+    text-transform:uppercase; letter-spacing:.07em; font-weight:800}
+
+  /* ---------- live agent trace (the F13 centrepiece) ---------- */
+  .trace{list-style:none; margin:0; padding:0; position:relative}
+  .trace::before{content:""; position:absolute; left:13px; top:10px; bottom:14px;
+    width:2px; background:var(--line)}
+  .trace li{position:relative; padding:0 0 14px 38px; animation:slideIn .32s ease both}
+  @keyframes slideIn{from{opacity:0; transform:translateX(-8px)} to{opacity:1; transform:none}}
+  .trace .node{position:absolute; left:0; top:1px; width:28px; height:28px; border-radius:9px;
+    display:grid; place-items:center; font-size:.85rem; border:2px solid var(--card);
+    background:var(--blueL); color:var(--blue)}
+  .trace .name{font-weight:700; font-size:.9rem; display:block}
+  .trace .detail{font-size:.82rem; color:var(--muted); word-break:break-word}
+  .n-supervisor{background:var(--purpleL)!important; color:var(--purple)!important}
+  .n-retriever,.n-web,.n-data,.n-code{background:var(--greenL)!important; color:var(--green)!important}
+  .n-critic{background:var(--redL)!important; color:var(--red)!important}
+  .n-generate{background:var(--orangeL)!important; color:var(--orange)!important}
+  .trace li.pending .node{animation:pulse 1.1s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.4)} 50%{box-shadow:0 0 0 7px rgba(124,58,237,0)}}
+  .empty{color:var(--muted); font-size:.88rem; font-style:italic}
+
+  /* ---------- answer ---------- */
+  #answer{font-size:1rem; min-height:40px}
+  #answer p{margin:0 0 10px} #answer ul,#answer ol{margin:0 0 10px; padding-left:22px}
+  #answer li{margin:3px 0}
+  #answer code{background:var(--blueL); border-radius:4px; padding:1px 6px; font-size:.88em;
+    font-family:ui-monospace,Consolas,monospace}
+  #answer strong{color:var(--navy)}
+  .badge{display:inline-block; font-size:.7rem; font-weight:800; letter-spacing:.04em;
+    text-transform:uppercase; border-radius:20px; padding:3px 10px; margin-left:8px}
+  .badge.rev{background:var(--orangeL); color:var(--orange)}
+  .badge.approved{background:var(--greenL); color:var(--green)}
+
+  /* ---------- sources & tool output ---------- */
+  .src{border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-bottom:8px; font-size:.85rem}
+  .src .tag{font-size:.66rem; font-weight:800; text-transform:uppercase; letter-spacing:.05em;
+    border-radius:20px; padding:2px 8px; margin-right:7px}
+  .tag.document{background:var(--greenL); color:var(--green)}
+  .tag.web{background:var(--blueL); color:var(--blue)}
+  .tag.sql{background:var(--purpleL); color:var(--purple)}
+  .tag.code{background:var(--orangeL); color:var(--orange)}
+  .src .snip{color:var(--muted); margin-top:5px; font-size:.8rem}
+  .src a{color:var(--blue); word-break:break-all}
+  details{border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:10px}
+  details summary{cursor:pointer; font-weight:700; font-size:.85rem; color:var(--navy)}
+  details pre{background:#0f1a2b; color:#e6edf6; border-radius:8px; padding:12px;
+    overflow-x:auto; font-size:.78rem; line-height:1.5; margin:10px 0 0}
+  .err{background:var(--redL); color:var(--red); border-radius:10px; padding:12px 14px;
+    font-size:.88rem; margin-top:12px}
+  .err b{display:block; margin-bottom:4px}
+  footer{text-align:center; color:var(--muted); font-size:.82rem; margin-top:42px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Multi-Agent AI Analyst</h1>
+      <p class="sub">A supervisor delegates to specialist agents, a critic verifies the answer — watch it happen live.</p>
+    </div>
+    <div class="settings">
+      <label for="api">Backend</label>
+      <input id="api" value="http://localhost:8000"
+             title="Change this to your Colab or Render URL after deploying" />
+    </div>
+  </header>
+
+  <div class="status" id="status">
+    <span class="pill"><span class="dot"></span>connecting…</span>
+  </div>
+
+  <div class="ask">
+    <div class="ask-row">
+      <textarea id="q" rows="1" placeholder="Ask something that needs more than one agent…"></textarea>
+      <button class="primary" id="go">Ask</button>
+    </div>
+    <div class="examples" id="examples"></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel">
+      <h2>Live agent trace</h2>
+      <ul class="trace" id="trace"></ul>
+      <p class="empty" id="traceEmpty">Ask a question to see the agents work.</p>
+    </div>
+
+    <div>
+      <div class="panel">
+        <h2>Answer <span id="verdict"></span></h2>
+        <div id="answer"><p class="empty">No answer yet.</p></div>
+        <div id="tools"></div>
+      </div>
+      <div class="panel" style="margin-top:20px">
+        <h2>Sources</h2>
+        <div id="sources"><p class="empty">Sources the agents used will appear here.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>Multi-Agent AI Analyst — LangGraph supervisor · Gemini · Qdrant · SQLite · sandboxed Python</footer>
+</div>
+
+<script>
+/* ------------------------------------------------------------------ *
+ * F13 — streaming frontend.
+ * Talks to the FastAPI backend over Server-Sent Events so each agent
+ * step renders the moment the backend finishes that node.
+ * ------------------------------------------------------------------ */
+
+const $ = (id) => document.getElementById(id);
+const api = () => $('api').value.replace(/\/+$/, '');
+
+const EXAMPLES = [
+  'How many customers churned in Q3 2024, and what percentage of all customers is that?',
+  'How many customers churned in Q3 2024, and what does the postmortem say caused it?',
+  'What is the refund policy?',
+  'What is the total MRR from active subscriptions?',
+  'How much MRR did we lose to churn in Q3 2024, and what share of active MRR is that?'
+];
+
+const ICONS = {
+  memory:'🧠', supervisor:'⚖', retriever:'📄', web:'🌐',
+  data:'🗄', code:'⚙', generate:'✍', critic:'🔍'
+};
+const LABELS = {
+  memory:'Memory', supervisor:'Supervisor', retriever:'Retriever agent',
+  web:'Web agent', data:'Data agent (SQL)', code:'Code agent',
+  generate:'Generating answer', critic:'Critic'
+};
+
+/* ---------- tiny markdown renderer (no external libraries) ---------- */
+function escapeHtml(s){
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderMarkdown(text){
+  const lines = escapeHtml(text).split('\n');
+  let html = '', inList = false;
+  for (let line of lines){
+    line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+               .replace(/`([^`]+)`/g, '<code>$1</code>');
+    const bullet = line.match(/^\s*[-*]\s+(.*)$/);
+    const numbered = line.match(/^\s*\d+\.\s+(.*)$/);
+    if (bullet || numbered){
+      if (!inList){ html += '<ul>'; inList = true; }
+      html += `<li>${(bullet||numbered)[1]}</li>`;
+    } else {
+      if (inList){ html += '</ul>'; inList = false; }
+      if (line.trim()) html += `<p>${line}</p>`;
+    }
+  }
+  if (inList) html += '</ul>';
+  return html || '<p class="empty">(empty answer)</p>';
+}
+
+/* ---------- health ---------- */
+async function checkHealth(){
+  const box = $('status');
+  try{
+    const res = await fetch(api() + '/health');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const h = await res.json();
+    const pills = [
+      pill('ok', 'backend online'),
+      pill(h.google_key_set ? 'ok' : 'bad', h.google_key_set ? 'Gemini key set' : 'no Gemini key'),
+      pill(h.knowledge_base_ready ? 'ok' : 'warn',
+           h.knowledge_base_ready ? `${h.knowledge_base_chunks} chunks indexed` : 'knowledge base empty — run ingest.py'),
+      pill(h.web_enabled ? 'ok' : 'warn', h.web_enabled ? 'web search on' : 'web search off (no Tavily key)'),
+      pill(h.langfuse_enabled ? 'ok' : 'warn', h.langfuse_enabled ? 'Langfuse tracing on' : 'tracing off'),
+      pill('', h.llm_model)
+    ];
+    box.innerHTML = pills.join('');
+  }catch(err){
+    box.innerHTML = pill('bad', 'backend unreachable — start it with: uvicorn main:app --port 8000');
+  }
+}
+const pill = (cls, text) => `<span class="pill ${cls}"><span class="dot"></span>${escapeHtml(text)}</span>`;
+
+/* ---------- trace rendering ---------- */
+function addStep(node, text, pending){
+  $('traceEmpty').style.display = 'none';
+  const li = document.createElement('li');
+  if (pending) li.className = 'pending';
+  const icon = ICONS[node] || '•';
+  const label = LABELS[node] || node;
+  // The step string already carries the detail (e.g. "supervisor → data");
+  // show the human label on top and the raw step underneath.
+  li.innerHTML = `<span class="node n-${node}">${icon}</span>
+                  <span class="name">${escapeHtml(label)}</span>
+                  <span class="detail">${escapeHtml(text)}</span>`;
+  $('trace').appendChild(li);
+  li.scrollIntoView({block:'nearest', behavior:'smooth'});
+  return li;
+}
+
+function addSources(list){
+  const box = $('sources');
+  if (box.querySelector('.empty')) box.innerHTML = '';
+  for (const s of list){
+    const div = document.createElement('div');
+    div.className = 'src';
+    const link = s.url ? `<a href="${escapeHtml(s.url)}" target="_blank" rel="noopener">${escapeHtml(s.url)}</a>` : '';
+    div.innerHTML = `<span class="tag ${s.type}">${escapeHtml(s.type)}</span>
+                     <b>${escapeHtml(s.title || '')}</b>
+                     ${link ? '<div class="snip">'+link+'</div>' : ''}
+                     ${s.snippet ? '<div class="snip">'+escapeHtml(s.snippet)+'…</div>' : ''}`;
+    box.appendChild(div);
+  }
+}
+
+function addToolOutput(tool, output){
+  const d = document.createElement('details');
+  d.innerHTML = `<summary>${tool === 'sql' ? '🗄 SQL query and result' : '⚙ Generated Python and its output'}</summary>
+                 <pre>${escapeHtml(output)}</pre>`;
+  $('tools').appendChild(d);
+}
+
+/* ---------- the ask flow ---------- */
+let source = null;
+const sessionId = 'web-' + Math.random().toString(36).slice(2, 10);
+
+function ask(){
+  const question = $('q').value.trim();
+  if (!question) return;
+
+  if (source) source.close();
+  $('trace').innerHTML = '';
+  $('tools').innerHTML = '';
+  $('sources').innerHTML = '<p class="empty">Sources the agents used will appear here.</p>';
+  $('answer').innerHTML = '<p class="empty">Working…</p>';
+  $('verdict').innerHTML = '';
+  $('traceEmpty').style.display = '';
+  $('go').disabled = true;
+  $('go').textContent = 'Working…';
+
+  const url = `${api()}/ask/stream?question=${encodeURIComponent(question)}&session_id=${sessionId}`;
+  source = new EventSource(url);
+  let pendingLi = null;
+  let sawRevision = false;
+
+  const clearPending = () => { if (pendingLi){ pendingLi.classList.remove('pending'); pendingLi = null; } };
+
+  source.addEventListener('step', (e) => {
+    const d = JSON.parse(e.data);
+    clearPending();
+    pendingLi = addStep(d.node, d.step, true);
+    if (d.step.toLowerCase().includes('revise')) sawRevision = true;
+  });
+
+  source.addEventListener('sources', (e) => addSources(JSON.parse(e.data).sources));
+
+  source.addEventListener('tool', (e) => {
+    const d = JSON.parse(e.data);
+    addToolOutput(d.tool, d.output);
+  });
+
+  source.addEventListener('draft', (e) => {
+    $('answer').innerHTML = renderMarkdown(JSON.parse(e.data).answer);
+  });
+
+  source.addEventListener('final', (e) => {
+    const d = JSON.parse(e.data);
+    clearPending();
+    if (d.answer) $('answer').innerHTML = renderMarkdown(d.answer);
+    $('verdict').innerHTML = d.revisions > 0
+      ? `<span class="badge rev">${d.revisions} revision${d.revisions > 1 ? 's' : ''} by critic</span>`
+      : `<span class="badge approved">approved first pass</span>`;
+    finish();
+  });
+
+  source.addEventListener('error', (e) => {
+    clearPending();
+    let msg = 'The stream failed. Is the backend still running?';
+    try { msg = JSON.parse(e.data).message; } catch (_) {}
+    $('answer').insertAdjacentHTML('beforeend',
+      `<div class="err"><b>Error</b>${escapeHtml(msg)}</div>`);
+    finish();
+  });
+
+  // EventSource fires onerror when the server closes the stream normally too,
+  // so only treat it as fatal if we never received the final event.
+  source.onerror = () => { if (source && source.readyState === EventSource.CLOSED) finish(); };
+
+  function finish(){
+    if (source) { source.close(); source = null; }
+    $('go').disabled = false;
+    $('go').textContent = 'Ask';
+  }
+}
+
+/* ---------- wiring ---------- */
+$('go').addEventListener('click', ask);
+$('q').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); ask(); }
+});
+$('api').addEventListener('change', checkHealth);
+
+$('examples').innerHTML = EXAMPLES
+  .map((x, i) => `<button class="chip" data-i="${i}">${escapeHtml(x.length > 62 ? x.slice(0, 62) + '…' : x)}</button>`)
+  .join('');
+$('examples').addEventListener('click', (e) => {
+  const btn = e.target.closest('.chip');
+  if (!btn) return;
+  $('q').value = EXAMPLES[+btn.dataset.i];
+  $('q').focus();
+});
+
+checkHealth();
+</script>
+</body>
+</html>
