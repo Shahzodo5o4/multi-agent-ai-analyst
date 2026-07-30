@@ -80,6 +80,54 @@ aytadi.
 
 ---
 
+## Formal submission message (to the mentor, not the group)
+
+Use this one when handing the work in. It maps to the rubric rather than
+selling the project.
+
+---
+
+**Multi-Agent AI Analyst — capstone submission**
+Shahzod Bahronov
+
+Repo: https://github.com/Shahzodo5o4/multi-agent-ai-analyst
+Live app: https://shahzodo5o4.github.io/multi-agent-ai-analyst/
+Live API: https://multi-agent-analyst-api.onrender.com
+
+All 14 features are implemented and verified against live services. The README
+contains everything the checklist asks for:
+
+• Supervisor graph diagram — renders at the top of the README
+• Metrics table, with vs without the critic — "Evaluation (F11)"
+• Langfuse trace screenshot — "Observability (F12)"
+• Frontend live-trace screenshot — "Deployment (F14)"
+• Error analysis — 8 failures, each traced to a specific agent, with a fix
+• Raw run evidence — `evidence/`
+
+Evaluation: 14 questions × 2 arms. Routing accuracy 100% across 28 runs,
+answer accuracy 92.9%, judge 4.43/5, RAGAS faithfulness 1.000.
+
+Two known gaps are documented rather than hidden: on one multi-part question
+the critic diagnoses the fault correctly but the revision loop cannot fix it
+(error analysis #7), and memory can short-circuit the supervisor when the same
+question is asked twice (#8).
+
+Ready to demo any feature live.
+
+---
+
+## Before the live demo — 3 minutes of prep
+
+The rubric awards full marks only for features **demonstrated live**, so:
+
+1. `python memory.py --reset` — otherwise a repeated question makes the
+   supervisor skip every specialist and hallucinate (error analysis #8).
+   Nothing else may hold `qdrant_data/` while you do it.
+2. Open https://multi-agent-analyst-api.onrender.com/health a minute early —
+   the free tier sleeps after 15 min idle and the first hit costs ~30 s.
+3. Have `python test_critic.py` ready in a terminal — it is the fastest way to
+   show F8 catching wrong answers, and F8 is the weakest line to defend.
+
 ## Suggested demo questions
 
 Paste one of these into the app if someone asks for a demo:
