@@ -449,6 +449,12 @@ Verified against the public URL on 2026-07-30 — `evidence/f14-render-live-run.
 Three specialists on one question, approved first pass, and the 25 churned
 customers match the ground truth in F5.
 
+The deployed instance runs with `web_enabled: true`, so the fourth specialist is
+reachable in production too — a live-search question through the same public URL
+routed `memory → supervisor → web → generate → critic ✅` in 31 s with 4 cited
+sources (`evidence/f4-web-agent-deployed.json`). All four specialists and the
+critic are therefore exercised on the deployed system, not only locally.
+
 Both routes below are free and need **no credit card**.
 
 **Easiest — Google Colab, ~5 minutes.** Upload the `backend` folder, then:
@@ -760,7 +766,7 @@ Verified end-to-end against the live proxy on **2026-07-30**:
 | ✅ | F1 state & config | 14/14 offline checks pass |
 | ✅ | F2 ingestion & retrieval | 2 docs → 7 chunks; both test queries return the right passages |
 | ✅ | F3 retriever | routed and returned 4 chunks in a live multi-agent run |
-| ✅ | F4 web agent | **both paths verified**: skips cleanly with no key (`smoke_test.py`), and with a live Tavily key the supervisor routed to `web` unprompted, 4 real results, critic approved — `evidence/f4-web-agent-live.json` |
+| ✅ | F4 web agent | **both paths verified, locally and in production**: skips cleanly with no key (`smoke_test.py`); with a live Tavily key the supervisor routed to `web` unprompted, 4 real results, critic approved — `evidence/f4-web-agent-live.json`, and again through the public URL in `evidence/f4-web-agent-deployed.json` |
 | ✅ | F5 text-to-SQL | returned 25 churned / $7,325.00 MRR — matches ground truth |
 | ✅ | F6 code agent | computed $3,402.15 compound interest; 6 sandbox escapes blocked; timeout kills infinite loops |
 | ✅ | F7 supervisor | **100% routing accuracy across 28 graded runs** |
