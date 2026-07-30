@@ -406,7 +406,28 @@ take priority over Langfuse's built-ins) — but do not invent per-token prices 
 a submission.
 
 F12 asks for a trace showing the full agent path *with token counts*. Both are
-present above; the screenshot of that trace is the deliverable.
+present above, and the deliverable screenshot is `evidence/f12-langfuse-trace.jpg`
+— captured from the **deployed** backend rather than a local run, so it proves
+tracing survives the deploy:
+
+```
+answer-question  28.34s        tag: multi-agent-analyst
+└ LangGraph      28.33s        7,974 prompt → 499 completion  (Σ 8,473)
+  ├ memory       15.84s   ├ retriever   0.80s   ├ supervisor  0.73s
+  ├ supervisor    1.40s   ├ supervisor  0.94s   ├ generate    0.89s
+  ├ data          5.14s   ├ code        0.87s   └ critic      0.83s
+  └ supervisor    0.80s
+```
+
+Three specialists and four supervisor decisions in a single question. Note
+`memory` at 15.84 s — over half the wall time, because a cold Qdrant read on
+Render's free tier dominates a run where every LLM call is under a second.
+
+One instrumentation gap the screenshot makes visible: the root span shows
+`Input: null` / `Output: undefined`, because the graph is invoked with the state
+dict and Langfuse records the payload on the `LangGraph` child rather than the
+wrapper. The path and tokens are what F12 grades, but setting the root span's
+input/output explicitly would make the trace read better.
 
 ---
 
@@ -774,7 +795,7 @@ Verified end-to-end against the live proxy on **2026-07-30**:
 | ✅ | F9 graph | multi-agent runs terminate cleanly; step budget + revision limit both enforced |
 | ✅ | F10 memory | turn 1 stored, turn 2 recalled it (`1 past turns recalled`) |
 | ✅ | F11 evaluation | clean 14×2 ablation, no quota errors — 4.43 judge, 92.9% accuracy, full RAGAS table |
-| ✅ | F12 Langfuse | trace verified via API: 29 observations, full agent path, **6,234→406 tokens** |
+| ✅ | F12 Langfuse | trace verified via API (29 observations, **6,234→406 tokens**) and **screenshotted from the deployed backend** — full path, 4 supervisor decisions, **7,974→499 tokens** — `evidence/f12-langfuse-trace.jpg` |
 | ✅ | F13 frontend | live SSE trace driven end-to-end: `memory → supervisor → data → supervisor → retriever → generate → critic ✅`, **approved first pass** — `evidence/f13-frontend-live-trace.jpg` |
 | ✅ | F14 deployment | **live on Render + GitHub Pages**; public URL answered a 3-specialist question, critic approved first pass — `evidence/f14-render-live-run.json` |
 
@@ -810,7 +831,6 @@ Every feature F1–F14 has now been exercised against live services.
 - [x] Code agent sandboxed with a runtime cap (`sandbox.py`)
 - [x] Long-term memory recalls an earlier turn (`memory.py`)
 - [x] RAGAS + LLM-judge over ≥10 questions, results pasted above
-- [ ] **Langfuse trace screenshot of one complex question** — trace verified via
-      API (29 observations), image not yet captured. Only outstanding deliverable.
+- [x] Langfuse trace screenshot of one complex question — `evidence/f12-langfuse-trace.jpg`
 - [x] Backend + frontend deployed, public URLs working
 - [x] This README completed: metrics table + error analysis filled in
