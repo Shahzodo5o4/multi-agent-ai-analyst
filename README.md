@@ -326,6 +326,12 @@ Raw output: `eval/results/results-20260730-125232.json` (+ `.md`).
 
 ## Observability (F12)
 
+![Langfuse trace of one complex question — the full agent path with token counts](evidence/f12-langfuse-trace.jpg)
+
+*One question through the deployed backend: `memory → supervisor → data →
+supervisor → retriever → supervisor → code → supervisor → generate → critic`,
+7,974 → 499 tokens, tagged `multi-agent-analyst`.*
+
 Optional. Add Langfuse keys to `.env` and every LLM call, tool call and token
 count is traced automatically:
 
@@ -441,6 +447,12 @@ input/output explicitly would make the trace read better.
 | **Backend** | https://multi-agent-analyst-api.onrender.com |
 | Health | https://multi-agent-analyst-api.onrender.com/health |
 | Source | https://github.com/Shahzodo5o4/multi-agent-ai-analyst |
+
+![The frontend streaming a live multi-agent trace, with sources](evidence/f13-frontend-live-trace.jpg)
+
+*F13 — the UI streams each step as it happens: `memory → supervisor → data →
+supervisor → retriever → generate → critic ✅`, approved first pass, with the
+sources the agents used listed alongside.*
 
 Deployed from `render.yaml` as a Render Blueprint, frontend on GitHub Pages from
 the same repo. `/health` reports which optional services are live, including
