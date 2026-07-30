@@ -133,8 +133,8 @@
     </div>
     <div class="settings">
       <label for="api">Backend</label>
-      <input id="api" value="http://localhost:8000"
-             title="Change this to your Colab or Render URL after deploying" />
+      <input id="api" value="https://multi-agent-analyst-api.onrender.com"
+             title="The deployed backend. Falls back to localhost:8000 when this page is opened locally." />
     </div>
   </header>
 
@@ -182,6 +182,13 @@
 
 const $ = (id) => document.getElementById(id);
 const api = () => $('api').value.replace(/\/+$/, '');
+
+// The input defaults to the deployed backend so the GitHub Pages copy works
+// with no setup. Opened from disk or a local server, point it back at uvicorn —
+// otherwise local development silently talks to production.
+if (['localhost', '127.0.0.1', ''].includes(location.hostname)) {
+  $('api').value = 'http://localhost:8000';
+}
 
 const EXAMPLES = [
   'How many customers churned in Q3 2024, and what percentage of all customers is that?',

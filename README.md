@@ -412,7 +412,38 @@ present above; the screenshot of that trace is the deliverable.
 
 ## Deployment (F14)
 
-Both routes are free and need **no credit card**.
+**Live now — both free, no credit card anywhere:**
+
+| | URL |
+|---|---|
+| **Frontend** | https://shahzodo5o4.github.io/multi-agent-ai-analyst/ |
+| **Backend** | https://multi-agent-analyst-api.onrender.com |
+| Health | https://multi-agent-analyst-api.onrender.com/health |
+| Source | https://github.com/Shahzodo5o4/multi-agent-ai-analyst |
+
+Deployed from `render.yaml` as a Render Blueprint, frontend on GitHub Pages from
+the same repo. `TAVILY_API_KEY` was deliberately left unset, so `/health` reports
+`web_enabled: false` and the web agent skips itself — see F4 below.
+
+**The first request after a pause takes ~30 s.** Render's free tier spins the
+instance down after 15 minutes of inactivity; a cold `/health` measured 11.2 s
+and the warm three-specialist question below took 36 s. Hit `/health` first if
+you are demoing.
+
+Verified against the public URL on 2026-07-30 — `evidence/f14-render-live-run.json`:
+
+```
+ 1. memory (no relevant history)     6. supervisor → code
+ 2. supervisor → data                7. code
+ 3. data/sql                         8. supervisor → finish
+ 4. supervisor → retriever           9. generate
+ 5. retriever (4 chunks)            10. critic → approved ✅   (0 revisions)
+```
+
+Three specialists on one question, approved first pass, and the 25 churned
+customers match the ground truth in F5.
+
+Both routes below are free and need **no credit card**.
 
 **Easiest — Google Colab, ~5 minutes.** Upload the `backend` folder, then:
 
@@ -432,9 +463,14 @@ properly via Colab Secrets and is the route to prefer.
 Paste that public URL into the **Backend** box at the top of `index.html`. Colab
 has ~12 GB RAM, so everything fits comfortably.
 
-**Always-on — Render + Vercel.** `render.yaml` is included; point Render at the
-repo, set `GEMINI_API_KEY` (your `sk-` proxy key) in its dashboard, and deploy
-`index.html` to Vercel as a static site.
+**Always-on — Render + GitHub Pages.** This is what the live URLs above run on.
+`render.yaml` is included: Render dashboard → New → Blueprint → pick the repo →
+set `GEMINI_API_KEY` (your `sk-` proxy key) when prompted. The build seeds the
+database and runs `ingest.py`, so the deployed instance comes up with its 7
+chunks already indexed — `knowledge_base_ready: true` on `/health`. Serve
+`index.html` from the same repo via Settings → Pages → branch `main`, folder
+`/ (root)`; the **Backend** box defaults to the Render URL and falls back to
+`localhost:8000` when the page is opened locally.
 
 > Render's free tier is **512 MB RAM**. Keep `EMBEDDING_MODEL` on the Gemini API
 > model (the default) rather than a local model, or the instance will be OOM-killed.
@@ -728,21 +764,31 @@ Verified end-to-end against the live proxy on **2026-07-30**:
 | ✅ | F11 evaluation | clean 14×2 ablation, no quota errors — 4.43 judge, 92.9% accuracy, full RAGAS table |
 | ✅ | F12 Langfuse | trace verified via API: 29 observations, full agent path, **6,234→406 tokens** |
 | ✅ | F13 frontend | live SSE trace driven end-to-end: `memory → supervisor → data → supervisor → retriever → generate → critic ✅`, **approved first pass** — `evidence/f13-frontend-live-trace.jpg` |
-| ⬜ | F14 deployment | `render.yaml` + `deploy_colab.ipynb` written; **not deployed** |
+| ✅ | F14 deployment | **live on Render + GitHub Pages**; public URL answered a 3-specialist question, critic approved first pass — `evidence/f14-render-live-run.json` |
 
 Known gaps, stated plainly: `multi-1` fails in both arms (finding #7, diagnosed
 not fixed), the critic cannot catch wrong SQL logic on `gemini-flash-lite`, and
-F4/F14 are unverified.
+**F4 is the one feature never run for real** — the no-key skip path is asserted
+in `smoke_test.py`, but `web_agent`'s live branch has never executed, because no
+Tavily key was ever issued. It is left unset in the deployment rather than
+switched on untested.
 
 ### Next steps, in order
 
 1. **Screenshot the Langfuse trace** (F12 deliverable). Filter by tag
    `multi-agent-analyst` and pick a trace named `answer-question` — the
-   `LangGraph`-named ones predate the fix above and look worse.
-2. **Deploy** — `deploy_colab.ipynb` is ready to upload; put the public URL here (F14).
-3. **Clear memory before any demo or graded run** — `python memory.py --reset`.
+   `LangGraph`-named ones predate the fix above and look worse. The deployed
+   instance has `langfuse_enabled: true`, so the live run above is traced there
+   too and is the best one to capture.
+2. **Clear memory before any demo or graded run** — `python memory.py --reset`.
    See finding #8: a recalled identical question makes the supervisor skip every
-   specialist. Nothing else may hold `qdrant_data/` while you do it.
+   specialist. Nothing else may hold `qdrant_data/` while you do it. This applies
+   to the deployed instance as well — its memory is empty only until the first
+   question, and a redeploy is what resets it.
+3. *Optional — the cheapest remaining win:* get a free Tavily key, verify
+   `web_agent` locally with a question that needs live search, and only then set
+   `TAVILY_API_KEY` in the Render dashboard. That takes F4 from ⬜ to ✅ and is
+   the last unverified feature.
 4. *Optional, if time allows:* fix finding #7 (route `REVISE` to the supervisor
    and pass the critique forward) or finding #8 (filter `recall()` by
    `session_id`). #7 is the one change that would make the critic ablation show a
@@ -752,12 +798,14 @@ F4/F14 are unverified.
 
 ## Submission checklist
 
-- [ ] Your **own** free API keys in `backend/.env` — never committed, never shared
-- [ ] Supervisor graph + 4 specialist agents + critic (`graph.py`, `agents.py`)
-- [ ] Real database wired for text-to-SQL, read-only guarded (`agents.py`)
-- [ ] Code agent sandboxed with a runtime cap (`sandbox.py`)
-- [ ] Long-term memory recalls an earlier turn (`memory.py`)
-- [ ] RAGAS + LLM-judge over ≥10 questions, results pasted above
-- [ ] Langfuse trace screenshot of one complex question
-- [ ] Backend + frontend deployed, public URLs working
-- [ ] This README completed: metrics table + error analysis filled in
+- [x] Your **own** free API keys in `backend/.env` — never committed, never shared
+      *(`.gitignore` excludes it; the pushed tree was scanned for `sk-`/`AIza` patterns and is clean)*
+- [x] Supervisor graph + 4 specialist agents + critic (`graph.py`, `agents.py`)
+- [x] Real database wired for text-to-SQL, read-only guarded (`agents.py`)
+- [x] Code agent sandboxed with a runtime cap (`sandbox.py`)
+- [x] Long-term memory recalls an earlier turn (`memory.py`)
+- [x] RAGAS + LLM-judge over ≥10 questions, results pasted above
+- [ ] **Langfuse trace screenshot of one complex question** — trace verified via
+      API (29 observations), image not yet captured. Only outstanding deliverable.
+- [x] Backend + frontend deployed, public URLs working
+- [x] This README completed: metrics table + error analysis filled in
