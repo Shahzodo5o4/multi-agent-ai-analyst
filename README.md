@@ -422,8 +422,14 @@ present above; the screenshot of that trace is the deliverable.
 | Source | https://github.com/Shahzodo5o4/multi-agent-ai-analyst |
 
 Deployed from `render.yaml` as a Render Blueprint, frontend on GitHub Pages from
-the same repo. `TAVILY_API_KEY` was deliberately left unset, so `/health` reports
-`web_enabled: false` and the web agent skips itself — see F4 below.
+the same repo. `/health` reports which optional services are live, including
+`web_enabled` — that flag is simply `bool(TAVILY_API_KEY)`, so it tells you
+whether the deployed instance can search the web at all.
+
+> **If you enable web search on a public URL, the quota is public too.** Tavily's
+> free tier is 1000 searches/month and this API has no auth or rate limit in
+> front of it, so anyone who finds the URL can spend that budget. It is fine for
+> a graded demo; it is not fine to leave running indefinitely.
 
 **The first request after a pause takes ~30 s.** Render's free tier spins the
 instance down after 15 minutes of inactivity; a cold `/health` measured 11.2 s
@@ -754,7 +760,7 @@ Verified end-to-end against the live proxy on **2026-07-30**:
 | ✅ | F1 state & config | 14/14 offline checks pass |
 | ✅ | F2 ingestion & retrieval | 2 docs → 7 chunks; both test queries return the right passages |
 | ✅ | F3 retriever | routed and returned 4 chunks in a live multi-agent run |
-| ⬜ | F4 web agent | skip-without-key path verified; **never run with a real Tavily key** |
+| ✅ | F4 web agent | **both paths verified**: skips cleanly with no key (`smoke_test.py`), and with a live Tavily key the supervisor routed to `web` unprompted, 4 real results, critic approved — `evidence/f4-web-agent-live.json` |
 | ✅ | F5 text-to-SQL | returned 25 churned / $7,325.00 MRR — matches ground truth |
 | ✅ | F6 code agent | computed $3,402.15 compound interest; 6 sandbox escapes blocked; timeout kills infinite loops |
 | ✅ | F7 supervisor | **100% routing accuracy across 28 graded runs** |
@@ -767,11 +773,8 @@ Verified end-to-end against the live proxy on **2026-07-30**:
 | ✅ | F14 deployment | **live on Render + GitHub Pages**; public URL answered a 3-specialist question, critic approved first pass — `evidence/f14-render-live-run.json` |
 
 Known gaps, stated plainly: `multi-1` fails in both arms (finding #7, diagnosed
-not fixed), the critic cannot catch wrong SQL logic on `gemini-flash-lite`, and
-**F4 is the one feature never run for real** — the no-key skip path is asserted
-in `smoke_test.py`, but `web_agent`'s live branch has never executed, because no
-Tavily key was ever issued. It is left unset in the deployment rather than
-switched on untested.
+not fixed) and the critic cannot catch wrong SQL logic on `gemini-flash-lite`.
+Every feature F1–F14 has now been exercised against live services.
 
 ### Next steps, in order
 
@@ -785,11 +788,7 @@ switched on untested.
    specialist. Nothing else may hold `qdrant_data/` while you do it. This applies
    to the deployed instance as well — its memory is empty only until the first
    question, and a redeploy is what resets it.
-3. *Optional — the cheapest remaining win:* get a free Tavily key, verify
-   `web_agent` locally with a question that needs live search, and only then set
-   `TAVILY_API_KEY` in the Render dashboard. That takes F4 from ⬜ to ✅ and is
-   the last unverified feature.
-4. *Optional, if time allows:* fix finding #7 (route `REVISE` to the supervisor
+3. *Optional, if time allows:* fix finding #7 (route `REVISE` to the supervisor
    and pass the critique forward) or finding #8 (filter `recall()` by
    `session_id`). #7 is the one change that would make the critic ablation show a
    real quality difference; #8 matters before a multi-user deploy.

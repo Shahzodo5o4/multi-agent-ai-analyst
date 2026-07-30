@@ -1,0 +1,43 @@
+{
+  "feature": "F4 web agent — live Tavily, verified locally before deploy",
+  "date": "2026-07-30",
+  "question": "What is the latest stable version of Python, and when was it released?",
+  "steps": [
+    "memory (2 past turns recalled)",
+    "supervisor → web",
+    "web (4 results)",
+    "supervisor → finish",
+    "generate",
+    "critic → approved ✅"
+  ],
+  "visited": [
+    "web"
+  ],
+  "answer": "As of June 2026, the latest stable version of Python is 3.14.6.",
+  "sources": [
+    {
+      "type": "web",
+      "title": "History of Python",
+      "url": "https://en.wikipedia.org/wiki/History_of_Python",
+      "snippet": "As of June 2026( Python 3.14.6 is the latest stable release. This version currently receives full bug-fix and security updates, while Python 3.13—released in October 2024—will continue to receive bug-"
+    },
+    {
+      "type": "web",
+      "title": "Latest Python Version (2025) – What's New in Python 3.14?",
+      "url": "https://www.liquidweb.com/blog/latest-python-version",
+      "snippet": "The latest major version, Python 3.14 was officially released on October 7, 2025.\n\nLet’s explore the key features of Python’s current version, how to download and install it, and what this release mea"
+    },
+    {
+      "type": "web",
+      "title": "What Is The Latest Python Version And Why Does It Matter? - Python ...",
+      "url": "https://www.youtube.com/watch?v=Qx7tAbvTH5M",
+      "snippet": "[Music] What is the latest Python version and why does it matter? Imagine building a house and knowing you have the best tools and materials to make it strong and efficient. That's what having the lat"
+    },
+    {
+      "type": "web",
+      "title": "Status of Python versions",
+      "url": "https://devguide.python.org/versions",
+      "snippet": "| 2.6 | PEP 361 | end-of-life | 2008-10-01 | 2013-10-29 | Barry Warsaw | [...] | Branch | Schedule | Status | First release | End of life | Release manager |\n ---  ---  --- |\n| 3.9 | PEP 596 | end-of-"
+    }
+  ]
+}
