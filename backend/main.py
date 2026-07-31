@@ -1,6 +1,7 @@
 """FastAPI server — the bridge between the graph and the HTML frontend (F13).
 
 Endpoints
+    GET  /             service banner — what this API is and where its routes are
     GET  /health        config + knowledge-base status (the UI polls this)
     POST /ask           non-streaming, returns the final state as JSON
     GET  /ask/stream    Server-Sent Events — emits each agent step AS IT HAPPENS
@@ -44,6 +45,27 @@ app.add_middleware(
 class AskRequest(BaseModel):
     question: str
     session_id: str = "default"
+
+
+# ---------------------------------------------------------------------------
+# Root
+# ---------------------------------------------------------------------------
+
+
+@app.get("/")
+def root() -> dict:
+    """Opening the bare host in a browser should explain itself, not 404."""
+    return {
+        "service": "Multi-Agent AI Analyst",
+        "version": "1.0",
+        "status": "ok",
+        "endpoints": {
+            "health": "GET /health",
+            "ask": "POST /ask",
+            "ask_stream": "GET /ask/stream?question=...&session_id=...",
+            "docs": "GET /docs",
+        },
+    }
 
 
 # ---------------------------------------------------------------------------
